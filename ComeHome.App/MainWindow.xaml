@@ -1,0 +1,403 @@
+﻿<Window x:Class="ComeHome.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComeHome.App"
+        xmlns:controls="clr-namespace:ComeHome.App.Controls"
+        mc:Ignorable="d"
+        Title="Come Home" Height="759" Width="520"
+        Icon="ComeHome.png"
+        MinHeight="620" MinWidth="480"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        Background="#F5F5F0">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24">
+
+            <!-- Header -->
+            <StackPanel HorizontalAlignment="Center" Margin="0,8,0,24">
+                <Image Source="ComeHome.png"
+                       Width="48"
+                       Height="48"
+                       HorizontalAlignment="Center"
+                       Stretch="Uniform"/>
+                <TextBlock Text="Come Home"
+                       FontSize="28"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       Foreground="#2E4057"/>
+                <TextBlock Text="A mindfulness bell for your day"
+                       FontSize="13"
+                       HorizontalAlignment="Center"
+                       Foreground="#7A8B99"
+                       Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Schedule Configuration -->
+            <Border Background="White"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Schedule"
+                           FontSize="14"
+                           FontWeight="Medium"
+                           Foreground="#2E4057"/>
+                    <TextBlock Text="Configure when the bell should ring"
+                           FontSize="12"
+                           Foreground="#7A8B99"
+                           Margin="0,2,0,12"/>
+
+                    <TabControl x:Name="ScheduleTabControl"
+                            SelectionChanged="ScheduleTab_Changed"
+                            Background="Transparent"
+                            BorderThickness="0,1,0,0"
+                            BorderBrush="#E0E4E8"
+                            Padding="0">
+
+                        <!-- ── Simple Weekly Schedule ── -->
+                        <TabItem Header="📅 Weekly" Padding="10,4">
+                            <StackPanel Margin="0,8,0,0">
+                                <ItemsControl x:Name="DayScheduleList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="2,5"
+                                                BorderBrush="#F0F0EC"
+                                                BorderThickness="0,0,0,1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="40"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <CheckBox IsChecked="{Binding IsEnabled}"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,6,0"/>
+
+                                                    <TextBlock Grid.Column="1"
+                                                           Text="{Binding DayName}"
+                                                           FontSize="12"
+                                                           FontWeight="Medium"
+                                                           Foreground="#2E4057"
+                                                           VerticalAlignment="Center"/>
+
+                                                    <controls:TimePicker Grid.Column="2"
+                                                                     SelectedTime="{Binding StartTime, Mode=TwoWay}"
+                                                                     IsEnabled="{Binding IsEnabled}"/>
+
+                                                    <TextBlock Grid.Column="3"
+                                                           Text=" – "
+                                                           VerticalAlignment="Center"
+                                                           Foreground="#7A8B99"/>
+
+                                                    <controls:TimePicker Grid.Column="4"
+                                                                     SelectedTime="{Binding EndTime, Mode=TwoWay}"
+                                                                     IsEnabled="{Binding IsEnabled}"/>
+
+                                                    <StackPanel Grid.Column="6"
+                                                            Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            Margin="6,0,0,0">
+                                                        <TextBlock Text="every "
+                                                               FontSize="11"
+                                                               Foreground="#7A8B99"
+                                                               VerticalAlignment="Center"/>
+                                                        <TextBox Text="{Binding IntervalMinutes}"
+                                                             Width="34" Height="22"
+                                                             FontSize="11"
+                                                             TextAlignment="Center"
+                                                             Padding="2,1"
+                                                             VerticalContentAlignment="Center"
+                                                             IsEnabled="{Binding IsEnabled}"/>
+                                                        <TextBlock Text=" min"
+                                                               FontSize="11"
+                                                               Foreground="#7A8B99"
+                                                               VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </TabItem>
+
+                        <!-- ── Quartz Cron Expression ── -->
+                        <TabItem Header="⚡ Cron" Padding="10,4">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Text="Quartz cron expression (Sec Min Hr DoM Mon DoW [Year])"
+                                       FontSize="11"
+                                       Foreground="#7A8B99"
+                                       Margin="0,0,0,6"/>
+
+                                <TextBox x:Name="CronExpressionBox"
+                                     Text="0 */30 9-17 ? * MON-FRI"
+                                     FontFamily="Consolas"
+                                     FontSize="13"
+                                     Padding="8,5"
+                                     Height="30"
+                                     TextChanged="CronExpression_Changed"/>
+
+                                <TextBlock x:Name="CronValidationText"
+                                       FontSize="11"
+                                       Margin="0,4,0,0"/>
+
+                                <TextBlock Text="Next fire times:"
+                                       FontSize="11"
+                                       FontWeight="Medium"
+                                       Foreground="#2E4057"
+                                       Margin="0,10,0,4"/>
+
+                                <ItemsControl x:Name="CronNextTimesList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                   FontSize="11"
+                                                   Foreground="#4A8C6F"
+                                                   FontFamily="Consolas"
+                                                   Margin="8,1,0,1"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Border Background="#FAFAF8"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    Margin="0,10,0,0">
+                                    <TextBlock TextWrapping="Wrap"
+                                           FontSize="10"
+                                           Foreground="#7A8B99">
+                                    <Run FontWeight="SemiBold">Fields:</Run>
+                                    <Run Text=" Seconds  Minutes  Hours  DayOfMonth  Month  DayOfWeek  [Year]"/>
+                                    <LineBreak/>
+                                    <Run FontWeight="SemiBold">Special:</Run>
+                                    <Run Text=" * (all)  ? (any)  - (range)  , (list)  / (step)  L (last)  W (weekday)  # (nth)"/>
+                                    <LineBreak/>
+                                    <Run FontWeight="SemiBold">Example:</Run>
+                                    <Run Text=" 0 */30 9-17 ? * MON-FRI  →  every 30 min, 9 AM–5 PM, weekdays"/>
+                                    </TextBlock>
+                                </Border>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+
+                    <Button x:Name="SaveScheduleButton"
+                            Content="💾 Save Schedule"
+                            Click="SaveSchedule_Click"
+                            Height="32"
+                            FontSize="12"
+                            Padding="12,0"
+                            Margin="0,12,0,0"
+                            Background="#EEF1F3"
+                            Foreground="#2E4057"
+                            BorderBrush="#D0D5DA"
+                            Cursor="Hand"
+                            HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Bell Sound -->
+            <Border Background="White"
+                CornerRadius="8"
+                Padding="20"
+                Margin="0,0,0,16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock
+                           FontSize="14"
+                           FontWeight="Medium"
+                           Foreground="#2E4057" Height="22"><Run Text="Sounds"/><LineBreak/><Run/></TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="SoundFileText"
+                               Grid.Column="0"
+                               FontSize="13"
+                               Foreground="#2E4057"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" Text="Bell (on ring)"/>
+                        <Button Grid.Column="1"
+                            Content="🔊"
+                            Click="PreviewSound_Click"
+                            ToolTip="Preview sound"
+                            Width="32" Height="32"
+                            FontSize="16"
+                            Padding="0"
+                            Margin="8,0,0,0"
+                            Background="Transparent"
+                            BorderBrush="#D0D5DA"
+                            Cursor="Hand"
+                            VerticalAlignment="Center"/>
+                        <Button Grid.Column="2"
+                            Content="Browse…"
+                            Click="BrowseSound_Click"
+                            Height="32"
+                            FontSize="12"
+                            Padding="12,0"
+                            Margin="8,0,0,0"
+                            Background="#EEF1F3"
+                            Foreground="#2E4057"
+                            BorderBrush="#D0D5DA"
+                            Cursor="Hand"
+                            VerticalAlignment="Center"/>
+                    </Grid>
+                    <Button x:Name="ResetSoundButton"
+                        Content="Reset to default"
+                        Click="ResetSound_Click"
+                        Visibility="Collapsed"
+                        HorizontalAlignment="Left"
+                        FontSize="11"
+                        Margin="0,8,0,0"
+                        Padding="8,4"
+                        Background="Transparent"
+                        Foreground="#7A8B99"
+                        BorderBrush="Transparent"
+                        Cursor="Hand"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Notifications -->
+            <Border Background="White"
+                CornerRadius="8"
+                Padding="20"
+                Margin="0,0,0,16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Notifications"
+                           FontSize="14"
+                           FontWeight="Medium"
+                           Foreground="#2E4057"
+                           Margin="0,0,0,12"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Show notification on bell"
+                               FontSize="13"
+                               Foreground="#2E4057"
+                               VerticalAlignment="Center"/>
+                        <CheckBox x:Name="ShowNotificationCheckBox"
+                              Grid.Column="1"
+                              IsChecked="False"
+                              VerticalAlignment="Center"/>
+                    </Grid>
+                    <TextBlock Text="Display a Windows notification when the bell rings"
+                           FontSize="11"
+                           Foreground="#A0ADB8"
+                           Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Meeting Detection -->
+            <Border Background="White"
+                CornerRadius="8"
+                Padding="20"
+                Margin="0,0,0,16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Meeting Detection"
+                           FontSize="14"
+                           FontWeight="Medium"
+                           Foreground="#2E4057"
+                           Margin="0,0,0,12"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Mute during meetings"
+                               FontSize="13"
+                               Foreground="#2E4057"
+                               VerticalAlignment="Center"/>
+                        <CheckBox x:Name="MuteDuringMeetingsCheckBox"
+                              Grid.Column="1"
+                              IsChecked="True"
+                              VerticalAlignment="Center"/>
+                    </Grid>
+                    <TextBlock Text="Silence the bell when your microphone is active"
+                           FontSize="11"
+                           Foreground="#A0ADB8"
+                           Margin="0,4,0,0"/>
+                    <TextBlock x:Name="MeetingStatusText"
+                           Text=""
+                           FontSize="11"
+                           Foreground="#A0ADB8"
+                           Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Status -->
+            <Border Background="White"
+                CornerRadius="8"
+                Padding="20"
+                Margin="0,0,0,16" Height="92">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                </Border.Effect>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="StatusText"
+                           Text="Ready"
+                           FontSize="16"
+                           FontWeight="Medium"
+                           Foreground="#7A8B99"
+                           HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="NextBellText"
+                           FontSize="12"
+                           Foreground="#A0ADB8"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           Width="250"
+                           TextWrapping="Wrap"
+                           Margin="0,4,0,0"
+                           Text="{x:Static local:MainWindow.DefaultNextBellMessage}"
+                           d:Text="(Start instructions placeholder)"
+                           Height="36"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Start / Stop Button -->
+            <Button x:Name="ToggleButton"
+                Content="Start"
+                Click="ToggleButton_Click"
+                Height="40"
+                FontSize="15"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Background="#4A8C6F"
+                BorderBrush="Transparent"
+                Cursor="Hand"
+                Margin="0,0,0,8">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

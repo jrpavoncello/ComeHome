@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/installer/">
+    <File Path="installer/ComeHome.iss" />
+  </Folder>
+  <Folder Name="/Root/">
+    <File Path="AGENTS.md" />
+  </Folder>
+  <Project Path="ComeHome.App/ComeHome.App.csproj" />
+</Solution>
